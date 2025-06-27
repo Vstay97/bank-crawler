@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  bank-crawler:
+    build: .
+    container_name: bank-crawler
+    restart: unless-stopped
+    environment:
+      # Server酱配置 - 请替换为您的实际密钥
+      - SERVER_CHAN_KEY=${SERVER_CHAN_KEY:-your_server_chan_key_here}
+      
+      # 爬虫配置
+      - BASE_URL=http://www.yinhangzhaopin.com
+      - LIST_URL=http://www.yinhangzhaopin.com/tag/shehuizhaopin_13698_1.html
+      
+      # 数据存储配置
+      - DATA_FILE=data/jobs_history.json
+      - BACKUP_FILE=data/jobs_backup.txt
+      - LOG_FILE=logs/crawler.log
+      
+      # 请求配置
+      - REQUEST_DELAY=1
+      - TIMEOUT=30
+      - RETRY_TIMES=3
+    volumes:
+      # 持久化数据目录
+      - ./data:/app/data
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8080/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

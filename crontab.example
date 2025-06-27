@@ -1,0 +1,38 @@
+# 银行招聘爬虫定时任务配置示例
+# 使用方法：
+# 1. 复制此文件内容
+# 2. 运行 crontab -e
+# 3. 粘贴并修改路径
+# 4. 保存退出
+
+# 每天上午9点运行爬虫
+# 格式：分 时 日 月 周 命令
+0 9 * * * /path/to/bank-crawler/run.sh run >> /path/to/bank-crawler/logs/cron.log 2>&1
+
+# 其他时间选项示例：
+# 每天上午8点和下午6点运行
+# 0 8,18 * * * /path/to/bank-crawler/run.sh run >> /path/to/bank-crawler/logs/cron.log 2>&1
+
+# 每周一到周五上午9点运行
+# 0 9 * * 1-5 /path/to/bank-crawler/run.sh run >> /path/to/bank-crawler/logs/cron.log 2>&1
+
+# 每2小时运行一次
+# 0 */2 * * * /path/to/bank-crawler/run.sh run >> /path/to/bank-crawler/logs/cron.log 2>&1
+
+# 每天上午9点30分运行
+# 30 9 * * * /path/to/bank-crawler/run.sh run >> /path/to/bank-crawler/logs/cron.log 2>&1
+
+# 注意事项：
+# 1. 将 /path/to/bank-crawler 替换为实际的项目路径
+# 2. 确保脚本有执行权限：chmod +x run.sh
+# 3. 确保Python环境在cron中可用
+# 4. 日志文件会记录运行结果和错误信息
+# 5. 可以通过 crontab -l 查看当前的定时任务
+# 6. 可以通过 crontab -r 删除所有定时任务
+
+# 环境变量设置（如果需要）
+# PATH=/usr/local/bin:/usr/bin:/bin
+# PYTHONPATH=/path/to/your/python/site-packages
+
+# 如果使用conda环境，可能需要这样设置：
+# 0 9 * * * /bin/bash -c "source /path/to/conda/bin/activate your_env && /path/to/bank-crawler/run.sh run" >> /path/to/bank-crawler/logs/cron.log 2>&1
