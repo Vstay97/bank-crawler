@@ -60,12 +60,33 @@ curl http://localhost:8080/health
 
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
-| `SERVER_CHAN_KEY` | Server酱API密钥 | 必须设置 |
+| `SERVER_CHAN_KEY` | Server酱API密钥，支持多个密钥用逗号分隔 | 必须设置 |
 | `BASE_URL` | 银行招聘网站基础URL | `http://www.yinhangzhaopin.com` |
 | `LIST_URL` | 职位列表页面URL | 默认社会招聘页面 |
 | `REQUEST_DELAY` | 请求间隔（秒） | `1` |
 | `TIMEOUT` | 请求超时时间（秒） | `30` |
 | `RETRY_TIMES` | 重试次数 | `3` |
+
+#### 多个接收者配置示例
+
+如果您希望多个人都能接收到招聘信息通知，可以配置多个Server酱密钥：
+
+**单个密钥（原有方式）：**
+```bash
+SERVER_CHAN_KEY=SCT123456abcdef
+```
+
+**多个密钥（用逗号分隔）：**
+```bash
+SERVER_CHAN_KEY=SCT123456abcdef,SCT789012ghijkl,SCT345678mnopqr
+```
+
+**多个密钥（用分号分隔）：**
+```bash
+SERVER_CHAN_KEY=SCT123456abcdef;SCT789012ghijkl;SCT345678mnopqr
+```
+
+配置多个密钥后，每当发现新的招聘信息时，系统会自动向所有配置的接收者发送通知。
 
 ### 定时任务配置
 

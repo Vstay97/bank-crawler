@@ -6,7 +6,9 @@ services:
     container_name: bank-crawler
     restart: unless-stopped
     environment:
-      # Server酱配置 - 请替换为您的实际密钥
+      # Server酱配置 (必需) - 支持多个密钥，用逗号分隔
+      # 单个密钥: "your_server_chan_key_here"
+      # 多个密钥: "key1,key2,key3"
       - SERVER_CHAN_KEY=${SERVER_CHAN_KEY:-your_server_chan_key_here}
       
       # 爬虫配置

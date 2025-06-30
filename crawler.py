@@ -34,7 +34,19 @@ class BankJobCrawler:
         self.data_file = os.getenv('DATA_FILE', 'data/jobs_history.json')
         self.backup_file = os.getenv('BACKUP_FILE', 'data/jobs_backup.txt')
         self.log_file = os.getenv('LOG_FILE', 'logs/crawler.log')
-        self.server_chan_key = os.getenv('SERVER_CHAN_KEY')
+        # 支持多个Server酱密钥
+        server_chan_keys_str = os.getenv('SERVER_CHAN_KEY', '')
+        if server_chan_keys_str:
+            # 支持逗号或分号分隔的多个密钥
+            if ',' in server_chan_keys_str:
+                self.server_chan_keys = [key.strip() for key in server_chan_keys_str.split(',') if key.strip()]
+            elif ';' in server_chan_keys_str:
+                self.server_chan_keys = [key.strip() for key in server_chan_keys_str.split(';') if key.strip()]
+            else:
+                # 单个密钥
+                self.server_chan_keys = [server_chan_keys_str.strip()] if server_chan_keys_str.strip() else []
+        else:
+            self.server_chan_keys = []
         
         # 请求配置
         self.request_delay = float(os.getenv('REQUEST_DELAY', '1'))
@@ -392,8 +404,12 @@ class BankJobCrawler:
     
     def send_notification(self, new_jobs: List[Dict]):
         """发送新职位通知"""
-        if not new_jobs or not self.server_chan_key:
+        if not new_jobs or not self.server_chan_keys:
+            if not self.server_chan_keys:
+                self.logger.warning("未配置Server酱密钥，跳过通知发送")
             return
+        
+        self.logger.info(f"准备向 {len(self.server_chan_keys)} 个接收者发送通知")
         
         try:
             # 为每个新职位发送单独的通知
@@ -403,24 +419,33 @@ class BankJobCrawler:
                 short = job.get('location', '未知地区')  # short: 对应爬取到的location
                 desp = self._format_job_details_markdown(job)  # desp: 格式化的岗位详情
                 
-                # 发送Server酱通知
-                url = f"https://sctapi.ftqq.com/{self.server_chan_key}.send"
-                data = {
-                    'title': title,
-                    'short': short,
-                    'desp': desp
-                }
+                # 向每个配置的密钥发送通知
+                for i, server_chan_key in enumerate(self.server_chan_keys, 1):
+                    try:
+                        # 发送Server酱通知
+                        url = f"https://sctapi.ftqq.com/{server_chan_key}.send"
+                        data = {
+                            'title': title,
+                            'short': short,
+                            'desp': desp
+                        }
+                        
+                        response = requests.post(url, data=data, timeout=10)
+                        response.raise_for_status()
+                        
+                        self.logger.info(f"通知发送成功 (接收者{i}): {title} - {short}")
+                        
+                    except Exception as e:
+                        self.logger.error(f"向接收者{i}发送通知失败: {title} - {e}")
+                    
+                    # 避免频繁请求，添加延迟
+                    time.sleep(0.5)
                 
-                response = requests.post(url, data=data, timeout=10)
-                response.raise_for_status()
-                
-                self.logger.info(f"通知发送成功: {title} - {short}")
-                
-                # 避免频繁请求，添加延迟
+                # 每个职位发送完成后稍作延迟
                 time.sleep(1)
             
         except Exception as e:
-            self.logger.error(f"发送通知失败: {e}")
+            self.logger.error(f"发送通知过程中出现错误: {e}")
     
     def _format_notification_content(self, jobs: List[Dict]) -> str:
         """格式化通知内容"""

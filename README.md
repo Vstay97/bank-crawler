@@ -70,8 +70,11 @@ cp .env.example .env
 编辑 `.env` 文件，配置以下参数:
 
 ```bash
-# Server酱配置 (必需)
+# Server酱配置 (必需) - 支持多个密钥，用逗号分隔
+# 单个密钥示例：
 SERVER_CHAN_KEY=your_server_chan_key_here
+# 多个密钥示例（多人接收通知）：
+# SERVER_CHAN_KEY=key1,key2,key3
 
 # 爬虫配置 (可选)
 BASE_URL=http://www.yinhangzhaopin.com
@@ -93,6 +96,27 @@ RETRY_TIMES=3
 2. 使用微信扫码登录
 3. 获取SendKey
 4. 将SendKey填入 `.env` 文件的 `SERVER_CHAN_KEY` 字段
+
+#### 多人接收通知配置
+
+如果您希望多个人都能接收到招聘信息通知，可以配置多个Server酱密钥：
+
+**单个密钥（原有方式）：**
+```bash
+SERVER_CHAN_KEY=SCT123456abcdef
+```
+
+**多个密钥（推荐用逗号分隔）：**
+```bash
+SERVER_CHAN_KEY=SCT123456abcdef,SCT789012ghijkl,SCT345678mnopqr
+```
+
+**多个密钥（也可用分号分隔）：**
+```bash
+SERVER_CHAN_KEY=SCT123456abcdef;SCT789012ghijkl;SCT345678mnopqr
+```
+
+配置多个密钥后，每当发现新的招聘信息时，系统会自动向所有配置的接收者发送微信通知。
 
 ## 使用方法
 
