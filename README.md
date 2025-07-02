@@ -156,6 +156,9 @@ cp .env.example .env
 
 # 清理服务
 ./deploy.sh clean
+
+# 测试微信通知功能
+./deploy.sh test-notification
 ```
 
 #### 健康检查
@@ -167,6 +170,26 @@ curl http://localhost:8080/health
 # 详细状态信息
 curl http://localhost:8080/status
 ```
+
+#### 微信通知测试
+
+首次部署时，系统会自动发送测试通知到您的微信，确认网络连通性。您也可以随时手动测试：
+
+```bash
+# 测试微信通知功能
+./deploy.sh test-notification
+```
+
+**测试通知包含以下信息：**
+- ✅ 部署成功确认
+- 🌐 网络连接状态
+- 📱 微信通知功能状态
+- 🔧 系统基本信息
+
+如果测试失败，请检查：
+1. `SERVER_CHAN_KEY` 配置是否正确
+2. 网络连接是否正常
+3. Server酱服务是否可用
 
 详细的 Docker 部署说明请参考：[DOCKER_DEPLOY.md](DOCKER_DEPLOY.md)
 

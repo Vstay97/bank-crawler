@@ -66,5 +66,6 @@ page_examples/
 
 # 测试文件
 test_*.py
+!test_notification.py
 *_test.py
 tests/
