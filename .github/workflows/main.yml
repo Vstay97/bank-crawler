@@ -1,0 +1,27 @@
+name: Bank Crawler
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # Runs at 08:00 UTC, which is 16:00 in Beijing time
+  workflow_dispatch:
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run crawler
+      env:
+        SERVER_CHAN_KEY: ${{ secrets.SERVER_CHAN_KEY }}
+      run: python crawler.py
