@@ -52,7 +52,18 @@ docker-compose logs -f bank-crawler
 
 # 健康检查
 curl http://localhost:8080/health
+
+# 测试微信通知功能
+./deploy.sh test-notification
 ```
+
+**首次部署自动通知**：使用 `./deploy.sh deploy` 进行首次部署时，系统会自动发送测试通知到您的微信，确认以下功能正常：
+- ✅ 服务器网络连接
+- ✅ Server酱配置正确
+- ✅ 微信通知功能可用
+- ✅ 爬虫服务已启动
+
+如果没有收到测试通知，请检查 `SERVER_CHAN_KEY` 配置和网络连接。
 
 ## 详细配置
 

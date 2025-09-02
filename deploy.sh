@@ -162,20 +162,22 @@ show_help() {
     echo "用法: $0 [命令]"
     echo ""
     echo "命令:"
-    echo "  deploy    - 完整部署（检查环境、构建、启动）"
-    echo "  start     - 启动服务"
-    echo "  stop      - 停止服务"
-    echo "  restart   - 重启服务"
-    echo "  status    - 显示服务状态"
-    echo "  logs      - 显示服务日志"
-    echo "  clean     - 清理服务和数据"
-    echo "  build     - 重新构建镜像"
-    echo "  help      - 显示此帮助信息"
+    echo "  deploy           - 完整部署（检查环境、构建、启动）"
+    echo "  start            - 启动服务"
+    echo "  stop             - 停止服务"
+    echo "  restart          - 重启服务"
+    echo "  status           - 显示服务状态"
+    echo "  logs             - 显示服务日志"
+    echo "  clean            - 清理服务和数据"
+    echo "  build            - 重新构建镜像"
+    echo "  test-notification - 测试微信通知功能"
+    echo "  help             - 显示此帮助信息"
     echo ""
     echo "示例:"
-    echo "  $0 deploy     # 首次部署"
-    echo "  $0 status     # 查看状态"
-    echo "  $0 logs       # 查看日志"
+    echo "  $0 deploy            # 首次部署"
+    echo "  $0 status            # 查看状态"
+    echo "  $0 logs              # 查看日志"
+    echo "  $0 test-notification # 测试微信通知"
 }
 
 # 主函数
@@ -188,6 +190,16 @@ main() {
             build_image
             start_service
             check_status
+            
+            # 发送部署成功的微信通知
+            log_info "正在发送部署成功通知..."
+            if docker-compose exec -T bank-crawler python test_notification.py; then
+                log_info "✅ 微信通知测试成功！请检查您的微信"
+            else
+                log_warn "⚠️  微信通知测试失败，但服务已正常启动"
+                log_warn "请检查 SERVER_CHAN_KEY 配置或网络连接"
+            fi
+            
             log_info "部署完成！访问 http://localhost:8080/status 查看状态"
             ;;
         start)
@@ -214,6 +226,16 @@ main() {
         build)
             check_docker
             build_image
+            ;;
+        test-notification)
+            check_docker
+            log_info "测试微信通知功能..."
+            if docker-compose exec -T bank-crawler python test_notification.py; then
+                log_info "✅ 微信通知测试成功！"
+            else
+                log_error "❌ 微信通知测试失败！"
+                exit 1
+            fi
             ;;
         help|--help|-h)
             show_help
